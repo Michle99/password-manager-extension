@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Simple Password Manager",
-  "version": "1.0",
+  "version": "1.0.0.0",
   "description": "A simple password manager with autofill functionality.",
   "permissions": [
     "storage",
