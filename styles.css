@@ -1,0 +1,79 @@
+/* Global Styling */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  h1 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Buttons */
+  button {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Credential List */
+  #credential-list {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .credential-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .credential-item:hover {
+    background-color: #e9ecef;
+  }
+  
+  /* Dropdown Styling */
+  .credential-dropdown {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  .credential-dropdown div {
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  
+  .credential-dropdown div:hover {
+    background-color: #e9ecef;
+  }
+  

@@ -1,12 +1,16 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getCredentials') {
-    chrome.storage.sync.get([request.url], (result) => {
-      if (result[request.url]) {
-        sendResponse({ credentials: result[request.url] });
-      } else {
-        sendResponse({});
-      }
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "autofill",
+    title: "Autofill Login",
+    contexts: ["editable"]
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === "autofill") {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      function: autofillWithMasterPassword
     });
-    return true; 
   }
 });

@@ -1,10 +1,31 @@
-document.getElementById("search").addEventListener("input", async (e) => {
-  const query = e.target.value.toLowerCase();
+document.getElementById("set-master-password").addEventListener("click", async () => {
+  const password = prompt("Set your master password:");
+  if (!password) return;
+
+  const hashedPassword = await hash(password);
+  await chrome.storage.local.set({ masterPasswordHash: hashedPassword });
+  alert("Master password set successfully!");
+});
+
+async function hash(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function searchCredentials(query) {
   const savedData = await chrome.storage.local.get("credentials");
   const credentials = savedData.credentials || [];
-  const filtered = credentials.filter((cred) => cred.hostname.toLowerCase().includes(query));
+  return credentials.filter((cred) => cred.hostname.toLowerCase().includes(query));
+}
 
-  displayCredentials(filtered);
+document.getElementById("search").addEventListener("input", async (e) => {
+  const query = e.target.value.toLowerCase();
+  const results = await searchCredentials(query);
+  displayCredentials(results);
 });
 
 function displayCredentials(credentials) {
@@ -18,8 +39,3 @@ function displayCredentials(credentials) {
     container.appendChild(item);
   });
 }
-
-// Initial load
-chrome.storage.local.get("credentials", (data) => {
-  displayCredentials(data.credentials || []);
-});
