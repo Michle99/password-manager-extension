@@ -1,33 +1,58 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'autofill') {
-    const { username, password } = request.credentials;
-    document.querySelectorAll('input[type="text"], input[type="email"]').forEach(input => {
-      if (input.value === '') {
-        input.value = username;
-      }
-    });
-    document.querySelectorAll('input[type="password"]').forEach(input => {
-      if (input.value === '') {
-        input.value = password;
-      }
-    });
-  }
-});
+function createCredentialDropdown(credentials) {
+  const dropdown = document.createElement("div");
+  dropdown.style.position = "absolute";
+  dropdown.style.background = "#fff";
+  dropdown.style.border = "1px solid #ccc";
+  dropdown.style.padding = "5px";
+  dropdown.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
+  dropdown.style.zIndex = 9999;
 
-chrome.runtime.sendMessage({ action: 'getCredentials', url: window.location.href }, (response) => {
-  if (response && response.credentials) {
-    chrome.runtime.sendMessage({ action: 'autofill', credentials: response.credentials });
-  }
-});
+  credentials.forEach((cred, index) => {
+    const item = document.createElement("div");
+    item.textContent = `${cred.username}`;
+    item.style.cursor = "pointer";
+    item.style.padding = "5px";
 
-document.querySelectorAll('form').forEach(form => {
-  form.addEventListener('submit', (event) => {
-    const username = form.querySelector('input[type="text"], input[type="email"]').value;
-    const password = form.querySelector('input[type="password"]').value;
-    if (username && password) {
-      chrome.storage.sync.set({ [window.location.href]: { username, password } }, () => {
-        console.log('Credentials saved!');
-      });
-    }
+    item.addEventListener("click", () => {
+      autofillCredential(cred);
+      dropdown.remove();
+    });
+
+    item.addEventListener("mouseover", () => {
+      item.style.background = "#f0f0f0";
+    });
+
+    item.addEventListener("mouseout", () => {
+      item.style.background = "#fff";
+    });
+
+    dropdown.appendChild(item);
   });
-});
+
+  return dropdown;
+}
+
+async function injectDropdown() {
+  const { hostname } = window.location;
+  const credentials = await getCredentials(hostname);
+  if (credentials.length === 0) return;
+
+  const passwordInput = document.querySelector("input[type='password']");
+  if (passwordInput) {
+    const rect = passwordInput.getBoundingClientRect();
+    const dropdown = createCredentialDropdown(credentials);
+
+    document.body.appendChild(dropdown);
+    dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+    dropdown.style.left = `${rect.left + window.scrollX}px`;
+  }
+}
+
+async function autofillCredential(credential) {
+  const usernameField = document.querySelector("input[type='text']") || document.querySelector("input:not([type='password'])");
+  const passwordField = document.querySelector("input[type='password']");
+  if (usernameField) usernameField.value = credential.username;
+  if (passwordField) passwordField.value = credential.password;
+}
+
+injectDropdown();
